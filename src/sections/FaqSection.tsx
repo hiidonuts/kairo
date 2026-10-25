@@ -39,9 +39,9 @@ function FaqItem({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={onToggle}
-          className="group flex w-full items-start justify-between gap-6 py-6 text-left md:py-7"
+          className="group flex w-full items-start justify-between gap-3 py-5 text-left min-[520px]:gap-6 min-[520px]:py-6 md:py-7"
         >
-          <span className="font-display text-xl tracking-tight text-charcoal transition-colors group-hover:text-maroon md:text-[1.3rem]">
+          <span className="font-display text-lg tracking-tight text-balance text-charcoal transition-colors group-hover:text-maroon min-[520px]:text-xl md:text-[1.3rem]">
             {q}
           </span>
           <span

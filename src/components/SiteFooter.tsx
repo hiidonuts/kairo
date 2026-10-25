@@ -10,7 +10,7 @@ export default function SiteFooter() {
   return (
     <footer className="band-ink band-animated relative z-10">
       <div className="page-grid band-content pt-12 md:pt-14">
-        <div className="col-span-12 grid gap-12 md:grid-cols-12 md:gap-8">
+        <div className="col-span-12 grid gap-10 min-[520px]:gap-12 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-5 lg:col-span-6">
             <a
               href="#kairo"

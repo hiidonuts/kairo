@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import * as d3 from "d3";
 import {
   ChevronDown,
   Filter,
@@ -10,6 +11,12 @@ import {
 } from "lucide-react";
 import { GRAPH_EDGES, GRAPH_NODES, type GraphNode } from "./demoData";
 
+type SimNode = GraphNode & d3.SimulationNodeDatum;
+type SimLink = d3.SimulationLinkDatum<SimNode> & {
+  source: string | SimNode;
+  target: string | SimNode;
+};
+
 function masteryFill(combined: number | null): string {
   if (combined == null || combined === 0) return "var(--bg-secondary)";
   if (combined >= 100) return "var(--accent)";
@@ -17,18 +24,47 @@ function masteryFill(combined: number | null): string {
 }
 
 function nodeRadius(kind: GraphNode["kind"]) {
-  if (kind === "space") return 3.2;
-  if (kind === "document") return 2.4;
-  return 1.8;
+  if (kind === "space") return 14;
+  if (kind === "document") return 10;
+  return 7;
+}
+
+function labelFont(kind: GraphNode["kind"]) {
+  if (kind === "space") return 13;
+  if (kind === "document") return 12;
+  return 11;
 }
 
 export default function MiniGraph() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const svgSelRef = useRef<d3.Selection<SVGSVGElement, unknown, null, undefined> | null>(
+    null
+  );
+  const simulationRef = useRef<d3.Simulation<SimNode, SimLink> | null>(null);
+  const focusedIdRef = useRef<string | null>("st-enl");
+  const dragMovedRef = useRef(false);
+
   const [search, setSearch] = useState("");
   const [focusedId, setFocusedId] = useState<string | null>("st-enl");
   const [spaceOpen, setSpaceOpen] = useState(false);
   const [filterNew, setFilterNew] = useState(false);
+  const [tick, setTick] = useState(0);
 
-  const focused = GRAPH_NODES.find((n) => n.id === focusedId) ?? null;
+  focusedIdRef.current = focusedId;
+
+  const nodesById = useMemo(() => {
+    void tick;
+    const sim = simulationRef.current;
+    const live = sim?.nodes() ?? [];
+    if (live.length) {
+      return new Map(live.map((n) => [n.id, n]));
+    }
+    return new Map(GRAPH_NODES.map((n) => [n.id, n as SimNode]));
+  }, [tick]);
+
+  const focused = (focusedId && nodesById.get(focusedId)) || null;
 
   const searchResults = useMemo(() => {
     if (!search.trim()) return [];
@@ -43,11 +79,317 @@ export default function MiniGraph() {
       if (a === focused.id) ids.add(b);
       if (b === focused.id) ids.add(a);
     }
-    return GRAPH_NODES.filter((n) => ids.has(n.id));
-  }, [focused]);
+    return [...ids]
+      .map((id) => nodesById.get(id))
+      .filter((n): n is SimNode => !!n);
+  }, [focused, nodesById]);
+
+  const centerGraph = () => {
+    const svg = svgSelRef.current;
+    const zoom = zoomRef.current;
+    const el = containerRef.current;
+    if (!svg || !zoom || !el) return;
+    const { width, height } = el.getBoundingClientRect();
+    svg
+      .transition()
+      .duration(450)
+      .ease(d3.easeCubicOut)
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.translate(width / 2, height / 2).scale(0.95)
+      );
+  };
+
+  const focusNode = (id: string) => {
+    setFocusedId(id);
+    const node = simulationRef.current?.nodes().find((n) => n.id === id);
+    const svg = svgSelRef.current;
+    const zoom = zoomRef.current;
+    const el = containerRef.current;
+    if (!node || node.x == null || node.y == null || !svg || !zoom || !el) return;
+    const { width, height } = el.getBoundingClientRect();
+    const scale = 1.6;
+    svg
+      .transition()
+      .duration(450)
+      .ease(d3.easeCubicOut)
+      .call(
+        zoom.transform,
+        d3.zoomIdentity
+          .translate(width / 2 - scale * node.x, height / 2 - scale * node.y)
+          .scale(scale)
+      );
+  };
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const svgEl = svgRef.current;
+    if (!container || !svgEl) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const svg = d3.select(svgEl);
+    svg.selectAll("*").remove();
+
+    const width = container.clientWidth || 640;
+    const height = container.clientHeight || 480;
+
+    const nodes: SimNode[] = GRAPH_NODES.map((n) => ({
+      ...n,
+      x: ((n.x - 50) / 50) * Math.min(width, height) * 0.42,
+      y: ((n.y - 50) / 50) * Math.min(width, height) * 0.42,
+    }));
+    const links: SimLink[] = GRAPH_EDGES.map(([source, target]) => ({
+      source,
+      target,
+    }));
+
+    const g = svg.append("g").attr("class", "graph-root");
+    const linkG = g.append("g").attr("class", "graph-links");
+    const nodeG = g.append("g").attr("class", "graph-nodes");
+    const labelG = g.append("g").attr("class", "graph-labels");
+
+    const simulation = d3
+      .forceSimulation<SimNode>(nodes)
+      .force(
+        "link",
+        d3
+          .forceLink<SimNode, SimLink>(links)
+          .id((d) => d.id)
+          .distance((e) => {
+            const s = e.source as SimNode;
+            const t = e.target as SimNode;
+            if (s.kind === "space" || t.kind === "space") return 110;
+            if (s.kind === "document" || t.kind === "document") return 90;
+            return 70;
+          })
+          .strength(0.7)
+      )
+      .force("charge", d3.forceManyBody().strength(-420))
+      .force(
+        "collide",
+        d3
+          .forceCollide<SimNode>()
+          .radius((d) => nodeRadius(d.kind) + 18)
+          .iterations(2)
+      )
+      .force("center", d3.forceCenter(0, 0))
+      .force("x", d3.forceX(0).strength(0.04))
+      .force("y", d3.forceY(0).strength(0.04))
+      .alpha(0.9)
+      .alphaDecay(0.028);
+
+    simulationRef.current = simulation;
+
+    const link = linkG
+      .selectAll("line")
+      .data(links)
+      .join("line")
+      .attr("stroke", "var(--text-primary)")
+      .attr("stroke-opacity", 0.22)
+      .attr("stroke-width", 1.25);
+
+    const node = nodeG
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+      .attr("class", "graph-node")
+      .attr("r", (d) => nodeRadius(d.kind))
+      .attr("fill", (d) => masteryFill(d.mastery))
+      .attr("stroke", (d) =>
+        d.mastery == null ? "var(--text-secondary)" : "var(--bg-primary)"
+      )
+      .attr("stroke-width", (d) => (d.mastery == null ? 1.5 : 1.1))
+      .attr("cursor", "grab")
+      .style("touch-action", "none");
+
+    const labels = labelG
+      .selectAll("text")
+      .data(nodes)
+      .join("text")
+      .text((d) => d.label)
+      .attr("font-size", (d) => labelFont(d.kind))
+      .attr("font-weight", (d) =>
+        d.kind === "space" || d.kind === "document" ? 500 : 400
+      )
+      .attr("fill", "var(--text-primary)")
+      .attr("fill-opacity", 0.82)
+      .attr("dx", (d) => nodeRadius(d.kind) + 6)
+      .attr("dy", "0.35em")
+      .style("pointer-events", "none")
+      .style("font-family", "var(--font-sans)");
+
+    const paint = () => {
+      const fid = focusedIdRef.current;
+      const neighbors = new Set<string>();
+      if (fid) {
+        for (const [a, b] of GRAPH_EDGES) {
+          if (a === fid) neighbors.add(b);
+          if (b === fid) neighbors.add(a);
+        }
+      }
+
+      link
+        .attr("x1", (d) => (d.source as SimNode).x ?? 0)
+        .attr("y1", (d) => (d.source as SimNode).y ?? 0)
+        .attr("x2", (d) => (d.target as SimNode).x ?? 0)
+        .attr("y2", (d) => (d.target as SimNode).y ?? 0)
+        .attr("stroke-opacity", (d) => {
+          if (!fid) return 0.22;
+          const s = (d.source as SimNode).id;
+          const t = (d.target as SimNode).id;
+          return s === fid || t === fid ? 0.45 : 0.08;
+        });
+
+      node
+        .attr("cx", (d) => d.x ?? 0)
+        .attr("cy", (d) => d.y ?? 0)
+        .attr("r", (d) =>
+          d.id === fid ? nodeRadius(d.kind) + 3 : nodeRadius(d.kind)
+        )
+        .attr("opacity", (d) => {
+          if (!fid) return 1;
+          return d.id === fid || neighbors.has(d.id) ? 1 : 0.28;
+        });
+
+      labels
+        .attr("x", (d) => d.x ?? 0)
+        .attr("y", (d) => d.y ?? 0)
+        .attr("opacity", (d) => {
+          if (!fid) return 1;
+          if (d.id === fid || neighbors.has(d.id)) return 1;
+          return d.kind === "subtopic" ? 0 : 0.35;
+        });
+    };
+
+    const drag = d3
+      .drag<SVGCircleElement, SimNode>()
+      .on("start", (event, d) => {
+        dragMovedRef.current = false;
+        d.fx = d.x;
+        d.fy = d.y;
+        if (!event.active && !reduceMotion) simulation.alphaTarget(0.28).restart();
+      })
+      .on("drag", (event, d) => {
+        if (Math.abs(event.dx) + Math.abs(event.dy) > 1) dragMovedRef.current = true;
+        const transform = d3.zoomTransform(svgEl);
+        d.fx = (d.fx ?? d.x ?? 0) + event.dx / transform.k;
+        d.fy = (d.fy ?? d.y ?? 0) + event.dy / transform.k;
+        d.x = d.fx;
+        d.y = d.fy;
+        if (reduceMotion) paint();
+      })
+      .on("end", (event, d) => {
+        if (!event.active && !reduceMotion) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+        setTick((n) => n + 1);
+      });
+
+    node.call(drag);
+
+    node.on("click", (event, d) => {
+      event.stopPropagation();
+      if (dragMovedRef.current) return;
+      setFocusedId(d.id);
+      focusedIdRef.current = d.id;
+      const el = containerRef.current;
+      const zoomBehavior = zoomRef.current;
+      if (el && zoomBehavior && d.x != null && d.y != null) {
+        const { width: w, height: h } = el.getBoundingClientRect();
+        const scale = 1.6;
+        svg
+          .transition()
+          .duration(reduceMotion ? 0 : 450)
+          .ease(d3.easeCubicOut)
+          .call(
+            zoomBehavior.transform,
+            d3.zoomIdentity
+              .translate(w / 2 - scale * d.x, h / 2 - scale * d.y)
+              .scale(scale)
+          );
+      }
+      setTick((n) => n + 1);
+    });
+
+    svg.on("click", () => {
+      if (dragMovedRef.current) return;
+      setFocusedId(null);
+      focusedIdRef.current = null;
+      setTick((n) => n + 1);
+    });
+
+    const zoom = d3
+      .zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.35, 2.8])
+      .filter((event) => {
+        if (event.type === "wheel") return true;
+        const target = event.target as Element | null;
+        // Let node drag own pointer events; background pans the map.
+        return !(target instanceof Element && target.closest("circle.graph-node"));
+      })
+      .on("zoom", (event) => {
+        g.attr("transform", event.transform.toString());
+      });
+
+    svg.call(zoom);
+    // Don't let wheel events bubble to the landing page Lenis scroll.
+    svg.on("wheel", (event) => event.stopPropagation());
+
+    const initial = d3.zoomIdentity
+      .translate(width / 2, height / 2)
+      .scale(0.95);
+    svg.call(zoom.transform, initial);
+
+    zoomRef.current = zoom;
+    svgSelRef.current = svg;
+
+    paint();
+    if (reduceMotion) {
+      simulation.stop();
+      simulation.tick(120);
+      paint();
+      setTick((n) => n + 1);
+    } else {
+      simulation.on("tick", () => {
+        paint();
+      });
+      simulation.on("end", () => setTick((n) => n + 1));
+    }
+
+    const ro = new ResizeObserver(() => {
+      // Keep current transform; physics already centered at 0,0.
+      setTick((n) => n + 1);
+    });
+    ro.observe(container);
+
+    return () => {
+      ro.disconnect();
+      simulation.stop();
+      simulationRef.current = null;
+      zoomRef.current = null;
+      svgSelRef.current = null;
+      svg.on(".zoom", null);
+      svg.selectAll("*").remove();
+    };
+    // Mount once for the demo graph dataset.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Refresh opacity/radius when focus changes without remounting the sim.
+    const sim = simulationRef.current;
+    if (!sim) return;
+    sim.restart();
+    sim.alpha(0.05);
+    setTick((n) => n + 1);
+  }, [focusedId]);
 
   return (
-    <div className="relative h-full overflow-hidden bg-[var(--bg-secondary)]">
+    <div
+      ref={containerRef}
+      className="relative h-full overflow-hidden bg-[var(--bg-secondary)]"
+      data-lenis-prevent
+    >
       <div className="pointer-events-none absolute inset-x-4 top-4 z-10 flex items-start justify-between gap-3 md:inset-x-6 md:top-5">
         <div className="pointer-events-auto relative w-full max-w-xs">
           <div className="relative flex items-center">
@@ -74,7 +416,7 @@ export default function MiniGraph() {
                     key={result.id}
                     type="button"
                     onClick={() => {
-                      setFocusedId(result.id);
+                      focusNode(result.id);
                       setSearch("");
                     }}
                     className="flex w-full flex-col px-3 py-2 text-left hover:bg-[var(--bg-secondary)]"
@@ -118,6 +460,15 @@ export default function MiniGraph() {
           <button
             type="button"
             aria-label="Rebuild map"
+            onClick={() => {
+              const sim = simulationRef.current;
+              if (!sim) return;
+              sim.nodes().forEach((n) => {
+                n.fx = null;
+                n.fy = null;
+              });
+              sim.alpha(0.85).restart();
+            }}
             className="flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-2 text-[var(--text-primary)] shadow-sm"
           >
             <RefreshCw size={16} />
@@ -125,6 +476,7 @@ export default function MiniGraph() {
           <button
             type="button"
             aria-label="Center graph"
+            onClick={centerGraph}
             className="flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-2 text-[var(--text-primary)] shadow-sm"
           >
             <LocateFixed size={16} />
@@ -151,72 +503,9 @@ export default function MiniGraph() {
         </div>
       </div>
 
-      <svg
-        className="h-full w-full"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        {GRAPH_EDGES.map(([a, b]) => {
-          const na = GRAPH_NODES.find((n) => n.id === a)!;
-          const nb = GRAPH_NODES.find((n) => n.id === b)!;
-          const dim =
-            focused && focused.id !== a && focused.id !== b
-              ? 0.12
-              : 0.28;
-          return (
-            <line
-              key={`${a}-${b}`}
-              x1={na.x}
-              y1={na.y}
-              x2={nb.x}
-              y2={nb.y}
-              stroke="var(--text-primary)"
-              strokeOpacity={dim}
-              strokeWidth={0.35}
-            />
-          );
-        })}
-        {GRAPH_NODES.map((n) => {
-          const r = nodeRadius(n.kind);
-          const isFocused = focused?.id === n.id;
-          const dimmed = focused && !isFocused && !connected.some((c) => c.id === n.id);
-          return (
-            <g
-              key={n.id}
-              className="cursor-pointer"
-              opacity={dimmed ? 0.28 : 1}
-              onClick={() => setFocusedId(n.id)}
-            >
-              <circle
-                cx={n.x}
-                cy={n.y}
-                r={isFocused ? r + 0.7 : r}
-                fill={masteryFill(n.mastery)}
-                stroke={
-                  n.mastery == null
-                    ? "var(--text-secondary)"
-                    : "var(--bg-primary)"
-                }
-                strokeWidth={n.mastery == null ? 0.35 : 0.25}
-              />
-              {(n.kind !== "subtopic" || isFocused || !focused) && (
-                <text
-                  x={n.x + r + 1.2}
-                  y={n.y + 0.9}
-                  fontSize={n.kind === "space" ? 3.4 : 2.8}
-                  fill="var(--text-primary)"
-                  fillOpacity={0.8}
-                  style={{ fontFamily: "var(--font-sans)" }}
-                >
-                  {n.label}
-                </text>
-              )}
-            </g>
-          );
-        })}
-      </svg>
+      <svg ref={svgRef} className="h-full w-full touch-none" />
 
-      <div className="absolute bottom-4 left-4 z-10 rounded-xl border border-[var(--border)] bg-[var(--card-bg)]/95 px-3 py-2.5 text-[10px] text-[var(--text-secondary)] shadow-sm backdrop-blur-sm md:bottom-5 md:left-5">
+      <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded-xl border border-[var(--border)] bg-[var(--card-bg)]/95 px-3 py-2.5 text-[10px] text-[var(--text-secondary)] shadow-sm backdrop-blur-sm md:bottom-5 md:left-5">
         <p className="font-nav mb-1.5 text-[11px] font-semibold text-[var(--text-primary)]">
           Mastery
         </p>
@@ -238,6 +527,9 @@ export default function MiniGraph() {
             </li>
           ))}
         </ul>
+        <p className="mt-2 text-[10px] text-[var(--text-tertiary)]">
+          Drag nodes · scroll to zoom
+        </p>
       </div>
 
       {focused && (
@@ -293,7 +585,7 @@ export default function MiniGraph() {
                 <button
                   key={cn.id}
                   type="button"
-                  onClick={() => setFocusedId(cn.id)}
+                  onClick={() => focusNode(cn.id)}
                   className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left hover:bg-[var(--bg-secondary)]"
                 >
                   <span className="truncate text-[12px] font-medium text-[var(--text-primary)]">

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MiniSidebar from "./MiniSidebar";
 import MiniTopbar from "./MiniTopbar";
 import MiniAiAssistant, { MiniExpandedChat } from "./MiniAiAssistant";
@@ -17,10 +17,24 @@ function titleFor(id: MiniTabId) {
   return NAV_ITEMS.find((n) => n.id === id)?.label ?? "Home";
 }
 
+const NARROW_APP = "(max-width: 720px)";
+
 export default function MiniKairoApp() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(NARROW_APP).matches
+  );
   const [activeId, setActiveId] = useState<MiniTabId>("spaces");
   const [tabs, setTabs] = useState<MiniTab[]>([{ id: "spaces", title: "Spaces" }]);
+
+  useEffect(() => {
+    const mq = window.matchMedia(NARROW_APP);
+    const sync = () => {
+      if (mq.matches) setCollapsed(true);
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const openTab = useCallback((id: MiniTabId) => {
     if (id === "home") return;
@@ -49,7 +63,7 @@ export default function MiniKairoApp() {
 
   return (
     <div
-      className="mini-kairo pointer-events-auto h-[min(760px,82vh)] w-full border border-[var(--border)] md:h-[min(800px,84vh)]"
+      className="mini-kairo pointer-events-auto h-[min(560px,68vh)] w-full max-w-full border border-[var(--border)] min-[520px]:h-[min(680px,76vh)] md:h-[min(800px,84vh)]"
       role="region"
       aria-label="Interactive Kairo app preview"
     >

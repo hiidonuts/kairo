@@ -75,16 +75,17 @@ export default function FeaturesSection() {
           </h2>
         </div>
 
-        <ol className="col-span-12 mt-6 grid grid-cols-1 border-t border-white/12 md:mt-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* 2 cols from ~520px (split screens); 3 cols only on wide desktops */}
+        <ol className="col-span-12 mt-6 grid grid-cols-1 border-t border-white/12 min-[520px]:grid-cols-2 md:mt-8 xl:grid-cols-3">
           {features.map((f) => (
             <li
               key={f.title}
               data-reveal
-              className="border-b border-white/12 py-10 md:border-r md:border-white/12 md:px-6 md:py-12 md:[&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(3n)]:border-r-0"
+              className="border-b border-white/12 py-8 min-[520px]:border-r min-[520px]:border-white/12 min-[520px]:px-4 min-[520px]:py-10 min-[520px]:[&:nth-child(2n)]:border-r-0 md:px-5 lg:px-6 lg:py-12 xl:[&:nth-child(2n)]:border-r xl:[&:nth-child(3n)]:border-r-0"
             >
               <p className="micro-label micro-label-on-dark">{f.label}</p>
-              <h3 className="display-sm mt-3 truncate text-ivory">{f.title}</h3>
-              <p className="mt-3 line-clamp-2 max-w-sm text-[15px] leading-relaxed text-ivory/55">
+              <h3 className="display-sm mt-3 text-balance text-ivory">{f.title}</h3>
+              <p className="mt-3 line-clamp-3 max-w-prose text-[14px] leading-relaxed text-ivory/55 sm:line-clamp-2 sm:text-[15px]">
                 {f.body}
               </p>
               <FeatureParallaxFrame

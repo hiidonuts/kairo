@@ -113,14 +113,14 @@ export default function HeroSection({ ready }: Props) {
     <section
       id="kairo"
       ref={root}
-      className="relative overflow-hidden pb-16 pt-28 md:pb-24 md:pt-36"
+      className="relative overflow-hidden px-0 pb-12 pt-24 min-[520px]:pb-16 min-[520px]:pt-28 md:pb-24 md:pt-36"
     >
       <HeroInteractiveBg />
 
       <div className="page-grid relative z-10">
-        <div className="col-span-12 mx-auto max-w-4xl text-center">
+        <div className="col-span-12 mx-auto w-full max-w-4xl text-center">
           <h1
-            className="font-display text-charcoal"
+            className="font-display text-balance text-charcoal"
             style={{
               fontSize: "var(--text-display)",
               lineHeight: 0.92,
@@ -150,7 +150,7 @@ export default function HeroSection({ ready }: Props) {
           <p
             data-fade
             data-reveal
-            className="mx-auto mt-7 max-w-lg text-[15px] leading-relaxed text-[var(--muted)] md:text-base"
+            className="mx-auto mt-5 max-w-lg px-1 text-[14px] leading-relaxed text-[var(--muted)] min-[520px]:mt-7 min-[520px]:text-[15px] md:text-base"
           >
             A study companion that improves your study workflow.
           </p>
@@ -159,11 +159,11 @@ export default function HeroSection({ ready }: Props) {
             id="download"
             data-fade
             data-reveal
-            className="mt-8 flex flex-wrap items-center justify-center gap-3"
+            className="mt-6 flex flex-wrap items-center justify-center gap-3 min-[520px]:mt-8"
           >
-            <a href="#faq" className="btn-solid">
-              <WindowsIcon className="h-4 w-4" />
-              Download for Windows
+            <a href="#faq" className="btn-solid max-w-full px-4 text-[12px] min-[400px]:px-5 min-[400px]:text-[var(--text-sm)]">
+              <WindowsIcon className="h-3.5 w-3.5 shrink-0 min-[400px]:h-4 min-[400px]:w-4" />
+              <span className="truncate">Download for Windows (Beta)</span>
             </a>
           </div>
         </div>

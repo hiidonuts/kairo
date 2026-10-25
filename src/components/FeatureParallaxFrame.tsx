@@ -60,7 +60,7 @@ export default function FeatureParallaxFrame({
   return (
     <figure
       ref={frame}
-      className="relative mt-8 w-full overflow-hidden bg-white/[0.04]"
+      className="relative mt-5 w-full overflow-hidden bg-white/[0.04] sm:mt-7 md:mt-8"
       style={{ aspectRatio: `${width} / ${height}` }}
     >
       <div

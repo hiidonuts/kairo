@@ -15,7 +15,7 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
 
-  --text-display: clamp(2.75rem, 7.5vw, 6.5rem);
+  --text-display: clamp(2.35rem, 8.5vw, 6.5rem);
   --text-display-md: clamp(2.1rem, 4.8vw, 3.75rem);
   --text-display-sm: clamp(1.65rem, 3vw, 2.25rem);
   --text-body: 1.0625rem;
@@ -75,6 +75,7 @@
     font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: 1.5;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -129,11 +130,18 @@
 
 @layer utilities {
   .page-grid {
-    width: min(1200px, calc(100% - 32px));
+    width: min(1200px, calc(100% - 24px));
     margin-inline: auto;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 16px;
+    column-gap: 12px;
+  }
+
+  @media (min-width: 520px) {
+    .page-grid {
+      width: min(1200px, calc(100% - 40px));
+      column-gap: 16px;
+    }
   }
 
   @media (min-width: 768px) {

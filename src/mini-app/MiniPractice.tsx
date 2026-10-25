@@ -68,11 +68,16 @@ export default function MiniPractice() {
     });
   }, [tab, search, deckFilter]);
 
-  const dueToday = PRACTICE_DECKS.filter((d) => d.kind === "Flashcards" && d.due > 0);
+  // Skip the due-today strip when the library is a single demo deck (avoids a duplicate card).
+  const flashcardCount = PRACTICE_DECKS.filter((d) => d.kind === "Flashcards").length;
+  const dueToday =
+    flashcardCount > 1
+      ? PRACTICE_DECKS.filter((d) => d.kind === "Flashcards" && d.due > 0)
+      : [];
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-transparent">
-      <div className="mx-auto flex w-full max-w-7xl shrink-0 flex-wrap items-center gap-2 px-3 pt-4 pb-3 md:gap-3 md:px-6">
+      <div className="mx-auto flex w-full max-w-7xl shrink-0 flex-wrap items-center gap-1.5 px-2 pt-3 pb-2 min-[520px]:gap-2 min-[520px]:px-3 min-[520px]:pt-4 min-[520px]:pb-3 md:gap-3 md:px-6">
         <div className="inline-flex shrink-0 rounded-xl bg-[var(--bg-secondary)] p-0.5">
           {(["quizzes", "flashcards"] as const).map((key) => (
             <button

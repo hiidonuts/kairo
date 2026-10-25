@@ -1,16 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Calendar,
-  CheckCircle2,
-  ChevronDown,
-  Circle,
-  Clock,
-  Pause,
-  Play,
-  Plus,
-  RotateCcw,
-} from "lucide-react";
-import { STUDY_TASKS, type StudyTodo } from "./demoData";
+import { ChevronDown, Clock, Pause, Play, Plus, RotateCcw } from "lucide-react";
 
 const FOCUS_SECONDS = 25 * 60;
 
@@ -21,7 +10,6 @@ function formatClock(total: number) {
 }
 
 export default function MiniStudyRoom() {
-  const [tasks, setTasks] = useState<StudyTodo[]>(STUDY_TASKS);
   const [filter, setFilter] = useState<"all" | "tasks" | "deadlines">("all");
   const [running, setRunning] = useState(false);
   const [timeLeft, setTimeLeft] = useState(FOCUS_SECONDS);
@@ -42,22 +30,16 @@ export default function MiniStudyRoom() {
     circumference - (timeLeft / FOCUS_SECONDS) * circumference;
   const untouched = !running && timeLeft === FOCUS_SECONDS;
 
-  const visible = tasks.filter((item) => {
-    if (item.done) return false;
-    if (filter === "tasks" && item.kind !== "task") return false;
-    if (filter === "deadlines" && item.kind !== "deadline") return false;
-    return true;
-  });
-
-  const toggleItem = (id: string) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-    );
-  };
+  const emptyCopy =
+    filter === "tasks"
+      ? "No tasks yet. Add one when you're ready."
+      : filter === "deadlines"
+        ? "No deadlines yet."
+        : "Your list is clear. Add a task whenever you're ready.";
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-6xl flex-col px-3 py-5 md:px-6">
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-10">
+    <div className="mx-auto flex h-full w-full max-w-6xl flex-col px-3 py-4 min-[520px]:py-5 md:px-6">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 min-[720px]:grid-cols-2 min-[720px]:gap-8 lg:gap-10">
         <div className="flex min-h-0 flex-col items-center justify-between">
           <div className="relative flex w-full flex-1 flex-col items-center justify-center">
             <div className="relative z-20 mb-5">
@@ -253,55 +235,10 @@ export default function MiniStudyRoom() {
             </div>
           </div>
 
-          <div className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-3 pb-4 md:px-4">
-            {visible.length === 0 ? (
-              <p className="px-2 py-8 text-center text-[12px] text-[var(--text-secondary)]">
-                Your list is clear for this filter.
-              </p>
-            ) : (
-              visible.map((item) => (
-                <div
-                  key={item.id}
-                  className="group flex gap-3 rounded-xl p-3 transition-colors hover:bg-[var(--bg-tertiary)]"
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggleItem(item.id)}
-                    className="mt-0.5 shrink-0 text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-                    aria-label={`Complete ${item.title}`}
-                  >
-                    {item.kind === "deadline" ? (
-                      <div className="flex h-[18px] w-[18px] items-center justify-center rounded-sm border border-current">
-                        {item.done && (
-                          <CheckCircle2 size={13} className="text-[var(--accent-maroon)]" />
-                        )}
-                      </div>
-                    ) : (
-                      <Circle size={18} />
-                    )}
-                  </button>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[14px] leading-tight font-medium text-[var(--text-primary)]">
-                      {item.title}
-                    </p>
-                    {item.space && (
-                      <span className="font-nav mt-1.5 inline-block rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-2 py-0.5 text-[10px] text-[var(--text-secondary)]">
-                        {item.space}
-                      </span>
-                    )}
-                    {item.meta && (
-                      <p className="mt-1 text-[11px] text-[var(--text-secondary)]">{item.meta}</p>
-                    )}
-                    {item.dueLabel && (
-                      <p className="mt-1 flex items-center gap-1.5 text-[11px] font-medium text-[var(--accent-maroon)]">
-                        <Calendar size={11} />
-                        {item.dueLabel}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
+          <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 md:px-4">
+            <p className="px-2 py-10 text-center text-[12px] leading-relaxed text-[var(--text-secondary)]">
+              {emptyCopy}
+            </p>
           </div>
         </section>
       </div>

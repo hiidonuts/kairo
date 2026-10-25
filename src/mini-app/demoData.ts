@@ -56,18 +56,6 @@ export const PRACTICE_DECKS: PracticeDeck[] = [
   },
   {
     id: "p2",
-    title: "Enlightenment ideas",
-    kind: "Flashcards",
-    space: "World History",
-    cards: 16,
-    due: 0,
-    mastery: 86,
-    status: "completed",
-    meta: "All caught up · 16 cards",
-    lastTouch: "Reviewed yesterday",
-  },
-  {
-    id: "p3",
     title: "Revolutions quiz",
     kind: "Quiz",
     space: "World History",
@@ -77,18 +65,6 @@ export const PRACTICE_DECKS: PracticeDeck[] = [
     status: "completed",
     meta: "18 questions, mixed types, hard",
     lastTouch: "Attempted 3 days ago",
-  },
-  {
-    id: "p4",
-    title: "Nation-states check-in",
-    kind: "Quiz",
-    space: "World History",
-    cards: 10,
-    due: 0,
-    mastery: 30,
-    status: "ongoing",
-    meta: "10 questions, multiple choice",
-    lastTouch: "Attempted today",
   },
 ];
 
@@ -102,38 +78,7 @@ export type StudyTodo = {
   dueLabel?: string;
 };
 
-export const STUDY_TASKS: StudyTodo[] = [
-  {
-    id: "t1",
-    title: "Review Age of Revolutions",
-    kind: "task",
-    done: false,
-    space: "World History",
-    meta: "From your study plan: study, Mon 12 Oct",
-  },
-  {
-    id: "t2",
-    title: "Timeline flashcards",
-    kind: "task",
-    done: false,
-    space: "World History",
-  },
-  {
-    id: "t3",
-    title: "Map labels practice",
-    kind: "task",
-    done: true,
-    space: "World History",
-  },
-  {
-    id: "t4",
-    title: "World History midterm",
-    kind: "deadline",
-    done: false,
-    space: "World History",
-    dueLabel: "Due Fri 31 Oct",
-  },
-];
+export const STUDY_TASKS: StudyTodo[] = [];
 
 export type GraphNode = {
   id: string;

@@ -20,6 +20,8 @@ type Props = {
   onNavigate: (id: MiniTabId) => void;
 };
 
+const DISABLED_NAV = new Set<MiniTabId>(["home"]);
+
 export default function MiniSidebar({
   activeId,
   collapsed,
@@ -64,7 +66,26 @@ export default function MiniSidebar({
       >
         <div className="space-y-1">
           {NAV_ITEMS.map((item) => {
-            const active = activeId === item.id;
+            const disabled = DISABLED_NAV.has(item.id);
+            const active = !disabled && activeId === item.id;
+
+            if (disabled) {
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled
+                  title={`${item.label} is not available in this preview`}
+                  className={`font-nav flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-[13px] font-semibold text-[var(--text-secondary)] opacity-40 ${
+                    collapsed ? "justify-center rounded-md px-0" : ""
+                  }`}
+                >
+                  <NavIcon id={item.id} size={18} active={false} hovered={false} />
+                  {!collapsed && <span className="leading-none">{item.label}</span>}
+                </button>
+              );
+            }
+
             return (
               <button
                 key={item.id}
@@ -101,7 +122,7 @@ export default function MiniSidebar({
             type="button"
             disabled
             title="Progress is not available in this preview"
-            className={`font-nav flex w-full cursor-not-allowed items-center gap-3 rounded-full px-3 py-2.5 text-[13px] font-semibold text-[var(--text-secondary)] opacity-40 ${
+            className={`font-nav flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-[13px] font-semibold text-[var(--text-secondary)] opacity-40 ${
               collapsed ? "justify-center rounded-md px-0" : ""
             }`}
           >

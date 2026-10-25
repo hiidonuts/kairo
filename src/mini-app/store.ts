@@ -26,7 +26,7 @@ const initialSpaces: MiniSpace[] = [
     id: WORLD_HISTORY_ID,
     name: "World History",
     description: "Empires, revolutions, and the long arcs that shaped the modern world.",
-    color: "#C4A484",
+    color: "#a02038",
     pinned: true,
     createdAt: new Date("2026-05-11").getTime(),
     itemCount: 1,
@@ -84,7 +84,7 @@ const initialNotes: MiniNote[] = [
   },
 ];
 
-const SPACE_COLORS = ["#C4A484", "#8B2020", "#4F7A5C", "#5B7C99", "#B7791F", "#6B5B7A"];
+const SPACE_COLORS = ["#a02038", "#8B2020", "#4F7A5C", "#5B7C99", "#B7791F", "#6B5B7A"];
 
 type MiniStore = {
   spaces: MiniSpace[];

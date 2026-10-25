@@ -6,24 +6,65 @@
     "SF Pro Text", "Segoe UI", sans-serif;
   --font-nav: "Onest Variable", Onest, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "SF Pro Text", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --color-ivory: var(--ivory);
   --color-maroon: var(--maroon);
   --color-charcoal: var(--charcoal);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
 
-  --text-display: clamp(2.75rem, 7vw, 6.5rem);
+  --text-display: clamp(2.75rem, 7.5vw, 6.5rem);
+  --text-display-md: clamp(2.1rem, 4.8vw, 3.75rem);
+  --text-display-sm: clamp(1.65rem, 3vw, 2.25rem);
   --text-body: 1.0625rem;
   --leading-display: 0.9;
 }
 
 @layer base {
   :root {
-    /* Cooler, lighter iOS-style canvas (was warm cream #f7f4f1) */
+    /* Brand */
     --ivory: #f5f5f7;
     --maroon: #a02038;
+    --maroon-bright: #c42845;
+    --maroon-soft: #d4788a;
     --charcoal: #1d1d1f;
+    --ink: #0c0c0e;
+    --muted: rgb(29 29 31 / 0.58);
+    --line: rgb(29 29 31 / 0.12);
+    --line-on-dark: rgb(255 255 255 / 0.12);
+    --surface: #ffffff;
+    --surface-soft: #efeff2;
+
+    /* Type */
+    --text-xs: 0.6875rem;
+    --text-sm: 0.8125rem;
+    --text-md: 0.9375rem;
+    --text-lg: 1.125rem;
+
+    /* Spacing scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4.5rem;
+    --space-9: 6.5rem;
+    --space-section: clamp(4.5rem, 10vw, 7.5rem);
+
+    /* Radii — restrained; no full-pill product chrome except CTAs */
+    --radius-sm: 4px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-pill: 999px;
+
+    /* Motion */
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --duration-reveal: 0.7s;
   }
 
   html,
@@ -36,6 +77,36 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Modern thin scrollbar — charcoal resting, maroon on hover */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(29 29 31 / 0.28) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgb(29 29 31 / 0.22);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(160 32 56 / 0.72);
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: transparent;
   }
 
   ::selection {
@@ -58,7 +129,7 @@
 
 @layer utilities {
   .page-grid {
-    width: min(1280px, calc(100% - 32px));
+    width: min(1200px, calc(100% - 32px));
     margin-inline: auto;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -67,7 +138,7 @@
 
   @media (min-width: 768px) {
     .page-grid {
-      width: min(1280px, calc(100% - 64px));
+      width: min(1200px, calc(100% - 64px));
       column-gap: 24px;
     }
   }
@@ -80,59 +151,231 @@
     font-family: var(--font-nav);
   }
 
-  /* Legacy full-width CTA — kept for non-island uses */
-  .btn-download {
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .micro-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--maroon);
+  }
+
+  .micro-label-on-dark {
+    color: var(--maroon-soft);
+  }
+
+  .display-md {
+    font-family: var(--font-display);
+    font-size: var(--text-display-md);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .display-sm {
+    font-family: var(--font-display);
+    font-size: var(--text-display-sm);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+
+  .band-ink {
+    position: relative;
+    isolation: isolate;
+    background: var(--ink);
+    color: var(--ivory);
+    overflow: hidden;
+  }
+
+  /* Lythe-like animated grain field — maroon-tinted, no blue/purple */
+  .band-animated::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(45% 40% at 20% 30%, rgb(160 32 56 / 0.28) 0%, transparent 60%),
+      radial-gradient(40% 35% at 80% 70%, rgb(160 32 56 / 0.16) 0%, transparent 55%),
+      radial-gradient(60% 50% at 50% 50%, rgb(255 255 255 / 0.03) 0%, transparent 70%);
+    animation: kairo-drift 18s var(--ease) infinite alternate;
+  }
+
+  .band-animated::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes kairo-drift {
+    from {
+      transform: translate3d(-2%, -1%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(2%, 2%, 0) scale(1.06);
+    }
+  }
+
+  .band-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-solid {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
-    background: var(--charcoal);
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--maroon);
     color: #ffffff;
-    padding: 12px 20px;
-    font-size: 0.875rem;
+    padding: 0.8rem 1.25rem;
     font-family: var(--font-nav);
+    font-size: var(--text-sm);
     font-weight: 600;
-    transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+    letter-spacing: -0.01em;
+    transition: background-color 0.25s var(--ease), opacity 0.25s var(--ease);
   }
 
-  .btn-download:hover {
-    opacity: 0.9;
+  .btn-solid:hover {
+    background: var(--maroon-bright);
   }
 
-  /* Compact pill for the dynamic-island nav */
-  .btn-island {
+  .btn-solid-dark {
+    background: var(--charcoal);
+  }
+
+  .btn-solid-dark:hover {
+    background: var(--ink);
+    opacity: 1;
+  }
+
+  .btn-ghost {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
-    background: var(--charcoal);
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--charcoal);
+    padding: 0.8rem 1.25rem;
+    font-family: var(--font-nav);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: border-color 0.25s var(--ease), background-color 0.25s var(--ease);
+  }
+
+  .btn-ghost:hover {
+    border-color: rgb(29 29 31 / 0.28);
+    background: rgb(29 29 31 / 0.03);
+  }
+
+  .btn-ghost-on-dark {
+    border-color: var(--line-on-dark);
+    color: var(--ivory);
+  }
+
+  .btn-ghost-on-dark:hover {
+    border-color: rgb(255 255 255 / 0.28);
+    background: rgb(255 255 255 / 0.04);
+  }
+
+  .btn-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--maroon);
     color: #ffffff;
     padding: 0.5rem 1rem;
     font-family: var(--font-nav);
-    font-size: 0.8125rem;
+    font-size: var(--text-sm);
     font-weight: 600;
     letter-spacing: -0.01em;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 20px -10px rgb(0 0 0 / 0.35);
-    transition: transform 0.25s var(--ease-ios), opacity 0.25s var(--ease-ios);
+    transition: background-color 0.25s var(--ease);
   }
 
-  .btn-island:hover {
-    opacity: 0.92;
-    transform: scale(1.02);
+  .btn-nav:hover {
+    background: var(--maroon-bright);
   }
 
-  .btn-island:active {
-    transform: scale(0.98);
-  }
-
-  /* Soft iOS page atmosphere */
   .ios-canvas {
-    background:
-      radial-gradient(120% 80% at 50% -10%, rgb(255 255 255 / 0.95) 0%, transparent 55%),
-      radial-gradient(80% 50% at 100% 20%, rgb(162 32 56 / 0.04) 0%, transparent 50%),
-      radial-gradient(70% 45% at 0% 40%, rgb(120 140 180 / 0.05) 0%, transparent 45%),
-      var(--ivory);
+    background: var(--ivory);
   }
+
+  .hero-interactive-bg {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    isolation: isolate;
+    contain: paint;
+    background: var(--ivory);
+  }
+
+  .hero-interactive-bg__field {
+    position: absolute;
+    inset: -8%;
+    background:
+      radial-gradient(42% 38% at 18% 28%, rgb(160 32 56 / 0.12) 0%, transparent 58%),
+      radial-gradient(38% 34% at 78% 36%, rgb(160 32 56 / 0.06) 0%, transparent 55%),
+      radial-gradient(48% 42% at 52% 78%, rgb(160 32 56 / 0.08) 0%, transparent 60%),
+      radial-gradient(55% 45% at 50% 15%, rgb(245 245 247 / 0.95) 0%, transparent 65%),
+      var(--ivory);
+    filter: blur(36px);
+  }
+
+  .hero-interactive-bg__glow {
+    position: absolute;
+    width: min(120vw, 1400px);
+    height: min(120vw, 1400px);
+    left: var(--mx, 50%);
+    top: var(--my, 32%);
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgb(160 32 56 / 0.14) 0%,
+      rgb(245 245 247 / 0.45) 40%,
+      transparent 70%
+    );
+    filter: blur(56px);
+    will-change: left, top;
+  }
+
+  .hero-interactive-bg__soft {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        circle min(95vw, 1100px) at var(--mx, 50%) var(--my, 32%),
+        rgb(245 245 247 / 0.15) 0%,
+        rgb(245 245 247 / 0.45) 55%,
+        rgb(245 245 247 / 0.72) 100%
+      );
+  }
+}
+
+/* Anchor offset is applied in JS from the live nav height (see smoothScroll). */
+html {
+  scroll-padding-top: 0;
+}
+
+#features,
+#faq,
+#download,
+#product {
+  scroll-margin-top: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -140,8 +383,16 @@
     scroll-behavior: auto;
   }
 
-  .btn-island:hover,
-  .btn-island:active {
-    transform: none;
+  .band-animated::before {
+    animation: none;
+  }
+
+  .hero-interactive-bg__glow {
+    left: 50%;
+    top: 32%;
+  }
+
+  .hero-interactive-bg__soft {
+    background: rgb(245 245 247 / 0.35);
   }
 }

@@ -1,22 +1,19 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { EASE_GSAP, intro } from "../config/motion";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
-import { useScrollStore } from "../store/scrollStore";
 
 gsap.registerPlugin(CustomEase);
 const ease = CustomEase.get("kairo") ?? CustomEase.create("kairo", EASE_GSAP);
 
 type Props = {
-  webgl: boolean;
   onComplete: () => void;
 };
 
-export default function Intro({ webgl, onComplete }: Props) {
+export default function Intro({ onComplete }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const done = useRef(false);
-  const sceneReady = useScrollStore((s) => s.sceneReady);
   const reduced = usePrefersReducedMotion();
 
   const finish = () => {
@@ -62,10 +59,12 @@ export default function Intro({ webgl, onComplete }: Props) {
     el.addEventListener("pointerdown", skip);
     window.addEventListener("keydown", onKey);
     window.addEventListener("wheel", skip, { passive: true });
+    const leave = window.setTimeout(finish, reduced ? 200 : 900);
     const maxWait = window.setTimeout(finish, 1800);
 
     return () => {
       ctx.revert();
+      window.clearTimeout(leave);
       window.clearTimeout(maxWait);
       el.removeEventListener("pointerdown", skip);
       window.removeEventListener("keydown", onKey);
@@ -73,15 +72,6 @@ export default function Intro({ webgl, onComplete }: Props) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (done.current) return;
-    const canLeave = !webgl || sceneReady || reduced;
-    if (!canLeave) return;
-    const t = window.setTimeout(finish, reduced ? 200 : 900);
-    return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sceneReady, webgl, reduced]);
 
   return (
     <div
@@ -91,13 +81,23 @@ export default function Intro({ webgl, onComplete }: Props) {
       aria-live="polite"
       aria-label="Loading Kairo"
     >
-      <p className="overflow-hidden font-display text-[clamp(3rem,9vw,5.5rem)] leading-none tracking-tight text-charcoal">
+      <div className="overflow-hidden font-display text-[clamp(3rem,9vw,5.5rem)] leading-none tracking-tight text-charcoal">
         <span className="block overflow-hidden">
-          <span data-intro-line className="block">
-            Kairo
+          <span
+            data-intro-line
+            className="flex items-center justify-center gap-[0.28em]"
+          >
+            <img
+              src="/kairo-ai.png"
+              alt=""
+              width={88}
+              height={88}
+              className="h-[0.92em] w-[0.92em] shrink-0 rounded-[0.18em] object-cover"
+            />
+            <span className="translate-y-[0.04em]">Kairo</span>
           </span>
         </span>
-      </p>
+      </div>
     </div>
   );
 }

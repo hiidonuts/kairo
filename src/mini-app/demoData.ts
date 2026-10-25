@@ -28,30 +28,209 @@ export const CONTINUE_DOCS = [
   { id: "d1", name: "Age of Revolutions" },
 ];
 
-export const PRACTICE_DECKS = [
-  { id: "p1", title: "World History timelines", kind: "Flashcards", cards: 24, mastery: 48, space: "World History" },
-  { id: "p2", title: "Revolutions quiz", kind: "Quiz", cards: 18, mastery: 62, space: "World History" },
+export type PracticeDeck = {
+  id: string;
+  title: string;
+  kind: "Flashcards" | "Quiz";
+  space: string;
+  cards: number;
+  due: number;
+  mastery: number;
+  status: "new" | "ongoing" | "completed";
+  meta: string;
+  lastTouch: string;
+};
+
+export const PRACTICE_DECKS: PracticeDeck[] = [
+  {
+    id: "p1",
+    title: "World History timelines",
+    kind: "Flashcards",
+    space: "World History",
+    cards: 24,
+    due: 12,
+    mastery: 48,
+    status: "ongoing",
+    meta: "12 due · 24 cards",
+    lastTouch: "Reviewed 2 days ago",
+  },
+  {
+    id: "p2",
+    title: "Enlightenment ideas",
+    kind: "Flashcards",
+    space: "World History",
+    cards: 16,
+    due: 0,
+    mastery: 86,
+    status: "completed",
+    meta: "All caught up · 16 cards",
+    lastTouch: "Reviewed yesterday",
+  },
+  {
+    id: "p3",
+    title: "Revolutions quiz",
+    kind: "Quiz",
+    space: "World History",
+    cards: 18,
+    due: 0,
+    mastery: 62,
+    status: "completed",
+    meta: "18 questions, mixed types, hard",
+    lastTouch: "Attempted 3 days ago",
+  },
+  {
+    id: "p4",
+    title: "Nation-states check-in",
+    kind: "Quiz",
+    space: "World History",
+    cards: 10,
+    due: 0,
+    mastery: 30,
+    status: "ongoing",
+    meta: "10 questions, multiple choice",
+    lastTouch: "Attempted today",
+  },
 ];
 
-export const STUDY_TASKS = [
-  { id: "t1", title: "Review Age of Revolutions", done: false, meta: "25 min · World History" },
-  { id: "t2", title: "Timeline flashcards", done: false, meta: "Due today · World History" },
-  { id: "t3", title: "Map labels practice", done: true, meta: "Done · World History" },
+export type StudyTodo = {
+  id: string;
+  title: string;
+  kind: "task" | "deadline";
+  done: boolean;
+  space: string | null;
+  meta?: string;
+  dueLabel?: string;
+};
+
+export const STUDY_TASKS: StudyTodo[] = [
+  {
+    id: "t1",
+    title: "Review Age of Revolutions",
+    kind: "task",
+    done: false,
+    space: "World History",
+    meta: "From your study plan: study, Mon 12 Oct",
+  },
+  {
+    id: "t2",
+    title: "Timeline flashcards",
+    kind: "task",
+    done: false,
+    space: "World History",
+  },
+  {
+    id: "t3",
+    title: "Map labels practice",
+    kind: "task",
+    done: true,
+    space: "World History",
+  },
+  {
+    id: "t4",
+    title: "World History midterm",
+    kind: "deadline",
+    done: false,
+    space: "World History",
+    dueLabel: "Due Fri 31 Oct",
+  },
 ];
 
-export const GRAPH_NODES = [
-  { id: "g1", label: "Revolution", x: 28, y: 42 },
-  { id: "g2", label: "Enlightenment", x: 52, y: 30 },
-  { id: "g3", label: "Empire", x: 70, y: 55 },
-  { id: "g4", label: "Industry", x: 38, y: 68 },
-  { id: "g5", label: "Nation-state", x: 58, y: 48 },
-  { id: "g6", label: "Trade", x: 78, y: 36 },
+export type GraphNode = {
+  id: string;
+  label: string;
+  kind: "space" | "document" | "subtopic";
+  x: number;
+  y: number;
+  mastery: number | null;
+  parentId?: string;
+};
+
+export const GRAPH_NODES: GraphNode[] = [
+  { id: "space", label: "World History", kind: "space", x: 50, y: 48, mastery: 58 },
+  {
+    id: "doc-rev",
+    label: "Age of Revolutions",
+    kind: "document",
+    x: 28,
+    y: 32,
+    mastery: 52,
+    parentId: "space",
+  },
+  {
+    id: "doc-ind",
+    label: "Industrial Age",
+    kind: "document",
+    x: 72,
+    y: 34,
+    mastery: 41,
+    parentId: "space",
+  },
+  {
+    id: "st-enl",
+    label: "Enlightenment",
+    kind: "subtopic",
+    x: 16,
+    y: 52,
+    mastery: 72,
+    parentId: "doc-rev",
+  },
+  {
+    id: "st-rev",
+    label: "Revolution",
+    kind: "subtopic",
+    x: 30,
+    y: 68,
+    mastery: 48,
+    parentId: "doc-rev",
+  },
+  {
+    id: "st-nat",
+    label: "Nation-state",
+    kind: "subtopic",
+    x: 44,
+    y: 58,
+    mastery: 35,
+    parentId: "doc-rev",
+  },
+  {
+    id: "st-ind",
+    label: "Industry",
+    kind: "subtopic",
+    x: 68,
+    y: 66,
+    mastery: 28,
+    parentId: "doc-ind",
+  },
+  {
+    id: "st-trade",
+    label: "Trade",
+    kind: "subtopic",
+    x: 84,
+    y: 54,
+    mastery: null,
+    parentId: "doc-ind",
+  },
+  {
+    id: "st-emp",
+    label: "Empire",
+    kind: "subtopic",
+    x: 78,
+    y: 22,
+    mastery: 55,
+    parentId: "doc-ind",
+  },
 ];
 
 export const GRAPH_EDGES: [string, string][] = [
-  ["g1", "g2"],
-  ["g2", "g5"],
-  ["g3", "g6"],
-  ["g4", "g1"],
-  ["g5", "g3"],
+  ["space", "doc-rev"],
+  ["space", "doc-ind"],
+  ["doc-rev", "st-enl"],
+  ["doc-rev", "st-rev"],
+  ["doc-rev", "st-nat"],
+  ["doc-ind", "st-ind"],
+  ["doc-ind", "st-trade"],
+  ["doc-ind", "st-emp"],
+  ["st-enl", "st-rev"],
+  ["st-rev", "st-nat"],
+  ["st-ind", "st-trade"],
 ];

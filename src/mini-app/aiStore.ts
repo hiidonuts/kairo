@@ -3,7 +3,7 @@ import { create } from "zustand";
 export const DEMO_PROMPT = "What can you do?";
 
 export const DEMO_REPLY =
-  "I’m Kairo AI — your on-device study partner. I can help you explore Spaces, turn notes into flashcards and quizzes, explain concepts from your materials, plan a Study Room session, and walk the knowledge graph with you. Everything stays on your computer.";
+  "I’m Kairo AI, your study partner on this computer. I can help you explore Spaces, turn notes into flashcards and quizzes, explain ideas from your materials, plan a Study Room session, and walk your topic map with you. Everything stays on your computer.";
 
 export type AiMessage = {
   id: string;

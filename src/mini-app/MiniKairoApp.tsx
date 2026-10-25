@@ -4,7 +4,6 @@ import MiniTopbar from "./MiniTopbar";
 import MiniAiAssistant, { MiniExpandedChat } from "./MiniAiAssistant";
 import {
   MiniGraph,
-  MiniHome,
   MiniNotes,
   MiniPractice,
   MiniSpaces,
@@ -21,12 +20,10 @@ function titleFor(id: MiniTabId) {
 export default function MiniKairoApp() {
   const [collapsed, setCollapsed] = useState(false);
   const [activeId, setActiveId] = useState<MiniTabId>("spaces");
-  const [tabs, setTabs] = useState<MiniTab[]>([
-    { id: "home", title: "Home" },
-    { id: "spaces", title: "Spaces" },
-  ]);
+  const [tabs, setTabs] = useState<MiniTab[]>([{ id: "spaces", title: "Spaces" }]);
 
   const openTab = useCallback((id: MiniTabId) => {
+    if (id === "home") return;
     setTabs((prev) => {
       if (prev.some((t) => t.id === id)) return prev;
       return [...prev, { id, title: titleFor(id) }];
@@ -40,7 +37,7 @@ export default function MiniKairoApp() {
         if (prev.length <= 1) return prev;
         const next = prev.filter((t) => t.id !== id);
         if (activeId === id) {
-          setActiveId(next[next.length - 1]?.id ?? "home");
+          setActiveId(next[next.length - 1]?.id ?? "spaces");
         }
         return next;
       });
@@ -53,13 +50,12 @@ export default function MiniKairoApp() {
   return (
     <div
       className="mini-kairo pointer-events-auto h-[min(760px,82vh)] w-full border border-[var(--border)] md:h-[min(800px,84vh)]"
-      data-lenis-prevent
       role="region"
       aria-label="Interactive Kairo app preview"
     >
       <div className="flex h-full min-h-0">
         <MiniSidebar
-          activeId={activeId === "ai_chat" ? "home" : activeId}
+          activeId={activeId === "ai_chat" ? "spaces" : activeId}
           collapsed={collapsed}
           onToggleCollapsed={() => setCollapsed((v) => !v)}
           onNavigate={openTab}
@@ -75,7 +71,6 @@ export default function MiniKairoApp() {
 
           <div className="relative min-h-0 flex-1 overflow-hidden bg-[var(--bg-secondary)]">
             <div className="absolute inset-0 overflow-auto">
-              {activeId === "home" && <MiniHome onGo={(id) => openTab(id as MiniTabId)} />}
               {activeId === "spaces" && <MiniSpaces />}
               {activeId === "notes-list" && <MiniNotes />}
               {activeId === "practice" && <MiniPractice />}

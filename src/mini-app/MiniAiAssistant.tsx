@@ -57,7 +57,7 @@ function ChatThread({ expanded }: { expanded?: boolean }) {
           <img src="/kairo-ai.png" alt="" className="h-14 w-14 object-contain opacity-90" />
           <p className="font-display text-lg font-semibold text-[var(--text-primary)]">Kairo AI</p>
           <p className="max-w-[260px] font-sans text-xs text-[var(--text-secondary)]">
-            Ask about your Spaces, notes, and practice — or send the suggested question below.
+            Ask about your Spaces, notes, and practice, or send the suggested question below.
           </p>
         </div>
       )}
@@ -148,13 +148,17 @@ export function MiniExpandedChat() {
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[var(--bg-secondary)]">
-      <div className="flex items-center gap-3 border-b border-[var(--border)]/20 px-5 py-3">
-        <div className="h-8 w-8">
-          <img src="/kairo-ai.png" alt="" className="h-full w-full object-contain" />
-        </div>
-        <div>
-          <h2 className="font-sans text-sm font-semibold text-[var(--text-primary)]">Kairo AI</h2>
-          <p className="font-sans text-[10px] text-[var(--text-secondary)]">Expanded chat</p>
+      <div className="flex items-center gap-2.5 border-b border-[var(--border)]/20 px-5 py-3">
+        <img
+          src="/kairo-ai.png"
+          alt=""
+          className="h-[1.35em] w-[1.35em] shrink-0 rounded-[5px] object-cover"
+        />
+        <div className="leading-none">
+          <h2 className="font-sans translate-y-[0.04em] text-sm font-semibold text-[var(--text-primary)]">
+            Kairo AI
+          </h2>
+          <p className="mt-1 font-sans text-[10px] text-[var(--text-secondary)]">Expanded chat</p>
         </div>
         <div className="ml-2 rounded-full border border-[var(--border)]/50 bg-[var(--bg-secondary)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
           No space selected
@@ -218,11 +222,13 @@ export default function MiniAiAssistant({ onExpand, hidden }: Props) {
             className="absolute right-4 bottom-4 z-50 flex h-[min(560px,78%)] w-[min(420px,calc(100%-1.5rem))] flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] shadow-2xl focus:outline-none"
           >
             <div className="relative z-10 flex items-center justify-between border-b border-[var(--border)]/20 bg-[var(--card-bg)] p-3 sm:p-4">
-              <div className="flex min-w-0 items-center gap-2 font-sans text-sm font-semibold text-[var(--text-primary)] sm:gap-3">
-                <div className="flex h-8 w-8 items-center justify-center">
-                  <img src="/kairo-ai.png" className="h-full w-full object-contain" alt="Kairo AI" />
-                </div>
-                <span className="shrink-0">Kairo AI</span>
+              <div className="flex min-w-0 items-center gap-2 font-sans text-sm leading-none font-semibold text-[var(--text-primary)] sm:gap-2.5">
+                <img
+                  src="/kairo-ai.png"
+                  className="h-[1.35em] w-[1.35em] shrink-0 rounded-[5px] object-cover"
+                  alt=""
+                />
+                <span className="shrink-0 translate-y-[0.04em]">Kairo AI</span>
                 <div className="ml-0.5 hidden truncate rounded-full border border-[var(--border)]/50 bg-[var(--bg-secondary)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)] sm:block">
                   No space selected
                 </div>

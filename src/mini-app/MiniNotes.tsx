@@ -110,10 +110,7 @@ export default function MiniNotes() {
             <span className="rounded-lg px-2.5 py-1">Recently edited</span>
           </div>
 
-          <div
-            className="no-scrollbar flex flex-1 flex-col gap-0.5 overflow-x-hidden overflow-y-auto px-2 py-2"
-            data-lenis-prevent="true"
-          >
+          <div className="no-scrollbar flex flex-1 flex-col gap-0.5 overflow-x-hidden overflow-y-auto px-2 py-2">
             {filtered.length === 0 ? (
               <div className="mt-10 p-8 text-center text-sm text-[var(--text-secondary)]">
                 No notes found
@@ -182,10 +179,7 @@ export default function MiniNotes() {
         )}
 
         {selected ? (
-          <div
-            className="relative flex h-full flex-1 justify-center overflow-y-auto"
-            data-lenis-prevent="true"
-          >
+          <div className="relative flex h-full flex-1 justify-center overflow-y-auto">
             <div className="w-full pb-32">
               <MiniNoteEditor
                 key={selected.id}

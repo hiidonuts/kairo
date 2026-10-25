@@ -21,33 +21,8 @@ export const nav = {
   hideDuration: 0.45,
 } as const;
 
-export const camera = {
-  hero: { position: [0, 0.15, 13.5] as const, lookAt: [0, 0, 0] as const },
-  /** Keep parallax low so the graph does not shake with the mouse */
-  parallax: 0.1,
-  lerp: 0.045,
+export const sectionReveal = {
+  duration: 0.75,
+  stagger: 0.08,
+  y: 28,
 } as const;
-
-export const graph = {
-  nodeCount: 30,
-  /** Whole graph fade (nodes, lines, labels) */
-  opacity: 0.2,
-  /** Cursor parting — readable, then settles when still */
-  cursorRepelRadius: 3.2,
-  cursorRepelStrength: 1.1,
-  /** Lower = silkier chase of sim positions */
-  displayLerp: 0.032,
-  /** Graph-space cursor follow */
-  cursorLerp: 0.08,
-  labelNear: 2.2,
-  labelBaseOpacity: 0.7,
-  labelNearOpacity: 1,
-} as const;
-
-export const scroll = {
-  /** Progress where hero graph begins to fade/settle as the mini app takes focus */
-  heroEnd: 0.45,
-} as const;
-
-/** Shared pointer smoothing for camera + graph */
-export const pointerSmooth = 0.08;

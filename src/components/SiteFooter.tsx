@@ -1,4 +1,7 @@
-import { WINDOWS_DOWNLOAD_URL } from "../config/downloads";
+import {
+  WINDOWS_DOWNLOAD_LABEL,
+  WINDOWS_DOWNLOAD_URL,
+} from "../config/downloads";
 
 const productLinks = [
   ["Features", "#features"],
@@ -6,9 +9,7 @@ const productLinks = [
   ["FAQs", "#faq"],
 ] as const;
 
-const getKairoLinks = [
-  ["Download for Windows (Beta)", WINDOWS_DOWNLOAD_URL],
-] as const;
+const getKairoLinks = [[WINDOWS_DOWNLOAD_LABEL, WINDOWS_DOWNLOAD_URL]] as const;
 
 export default function SiteFooter() {
   return (
@@ -65,6 +66,7 @@ export default function SiteFooter() {
                   <li key={label}>
                     <a
                       href={href}
+                      download
                       className="font-nav text-[14px] font-medium text-ivory/60 transition-colors hover:text-ivory"
                     >
                       {label}
@@ -87,7 +89,7 @@ export default function SiteFooter() {
 
         <div className="col-span-12 mt-4 border-t border-white/10 pt-4 md:mt-5 md:pt-5">
           <p className="font-mono text-[11px] text-ivory/35">
-            Â© {new Date().getFullYear()} Kairo
+            © {new Date().getFullYear()} Kairo
           </p>
         </div>
       </div>

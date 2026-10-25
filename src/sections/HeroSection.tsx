@@ -2,10 +2,13 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { EASE_GSAP, heroReveal } from "../config/motion";
+import {
+  WINDOWS_DOWNLOAD_LABEL,
+  WINDOWS_DOWNLOAD_URL,
+} from "../config/downloads";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import HeroInteractiveBg from "../components/HeroInteractiveBg";
 import MiniKairoApp from "../mini-app/MiniKairoApp";
-import { WINDOWS_DOWNLOAD_URL } from "../config/downloads";
 
 gsap.registerPlugin(CustomEase);
 const ease = CustomEase.get("kairo") ?? CustomEase.create("kairo", EASE_GSAP);
@@ -164,11 +167,11 @@ export default function HeroSection({ ready }: Props) {
           >
             <a
               href={WINDOWS_DOWNLOAD_URL}
-              download
               className="btn-solid max-w-full px-4 text-[12px] min-[400px]:px-5 min-[400px]:text-[var(--text-sm)]"
+              download
             >
               <WindowsIcon className="h-3.5 w-3.5 shrink-0 min-[400px]:h-4 min-[400px]:w-4" />
-              <span className="truncate">Download for Windows (Beta)</span>
+              <span className="truncate">{WINDOWS_DOWNLOAD_LABEL}</span>
             </a>
           </div>
         </div>

@@ -89,7 +89,7 @@ export default function SiteFooter() {
 
         <div className="col-span-12 mt-4 border-t border-white/10 pt-4 md:mt-5 md:pt-5">
           <p className="font-mono text-[11px] text-ivory/35">
-            © {new Date().getFullYear()} Kairo
+            Â© {new Date().getFullYear()} Kairo
           </p>
         </div>
       </div>

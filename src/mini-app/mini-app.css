@@ -1,0 +1,99 @@
+/* Scoped cream theme + chrome for the interactive mini Kairo window */
+.mini-kairo {
+  --bg-primary: #f7f4f1;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #fafaf9;
+  --tab-bg: #fafaf9;
+  --text-primary: #1a1a18;
+  --text-secondary: #999990;
+  --text-tertiary: #999990;
+  --accent: #8b2020;
+  --accent-maroon: #8b2020;
+  --border: #e8e5de;
+  --sidebar-bg: #ffffff;
+  --nav-active-text: var(--accent-maroon);
+  --card-bg: #ffffff;
+  --shadow-color: 0 0 0;
+  --font-display: "Newsreader Variable", Newsreader, Georgia, serif;
+  --font-nav: "Onest Variable", Onest, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+  overflow-anchor: none;
+  box-shadow:
+    0 1px 0 rgb(29 29 31 / 0.04),
+    0 2px 8px rgb(29 29 31 / 0.04),
+    0 28px 64px -24px rgb(29 29 31 / 0.22);
+}
+
+.mini-kairo .font-display {
+  font-family: var(--font-display);
+}
+
+.mini-kairo .font-nav {
+  font-family: var(--font-nav);
+}
+
+/* BlockNote in cream shell */
+.mini-kairo .bn-editor {
+  background: transparent;
+  padding-inline: 0.5rem;
+}
+
+.mini-kairo .bn-container {
+  --bn-colors-editor-background: transparent;
+  --bn-colors-editor-text: var(--text-primary);
+}
+
+.mini-kairo .arc-tab-left,
+.mini-kairo .arc-tab-right {
+  position: absolute;
+  bottom: -1px;
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.mini-kairo .arc-tab-left {
+  left: -11px;
+}
+
+.mini-kairo .arc-tab-left::before,
+.mini-kairo .arc-tab-right::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  box-shadow: 0 0 0 20px var(--arc-fill, var(--bg-secondary));
+}
+
+.mini-kairo .arc-tab-left::before {
+  left: -11px;
+}
+
+.mini-kairo .arc-tab-right {
+  right: -11px;
+}
+
+.mini-kairo .arc-tab-right::before {
+  right: -11px;
+}
+
+.mini-kairo .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.mini-kairo .no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

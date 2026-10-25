@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Newsreader Variable", Newsreader, Georgia, "Times New Roman", Times, serif;
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", "Segoe UI", sans-serif;
+  --font-nav: "Onest Variable", Onest, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", sans-serif;
+
+  --color-ivory: var(--ivory);
+  --color-maroon: var(--maroon);
+  --color-charcoal: var(--charcoal);
+
+  --text-display: clamp(2.75rem, 7vw, 6.5rem);
+  --text-body: 1.0625rem;
+  --leading-display: 0.9;
+}
+
+@layer base {
+  :root {
+    /* Cooler, lighter iOS-style canvas (was warm cream #f7f4f1) */
+    --ivory: #f5f5f7;
+    --maroon: #a02038;
+    --charcoal: #1d1d1f;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  html,
+  body {
+    margin: 0;
+    background: var(--ivory);
+    color: var(--charcoal);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--maroon);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--maroon);
+    outline-offset: 3px;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+}
+
+@layer utilities {
+  .page-grid {
+    width: min(1280px, calc(100% - 32px));
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .page-grid {
+      width: min(1280px, calc(100% - 64px));
+      column-gap: 24px;
+    }
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-nav {
+    font-family: var(--font-nav);
+  }
+
+  /* Legacy full-width CTA — kept for non-island uses */
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--charcoal);
+    color: #ffffff;
+    padding: 12px 20px;
+    font-size: 0.875rem;
+    font-family: var(--font-nav);
+    font-weight: 600;
+    transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+  }
+
+  .btn-download:hover {
+    opacity: 0.9;
+  }
+
+  /* Compact pill for the dynamic-island nav */
+  .btn-island {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--charcoal);
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-nav);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 20px -10px rgb(0 0 0 / 0.35);
+    transition: transform 0.25s var(--ease-ios), opacity 0.25s var(--ease-ios);
+  }
+
+  .btn-island:hover {
+    opacity: 0.92;
+    transform: scale(1.02);
+  }
+
+  .btn-island:active {
+    transform: scale(0.98);
+  }
+
+  /* Soft iOS page atmosphere */
+  .ios-canvas {
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgb(255 255 255 / 0.95) 0%, transparent 55%),
+      radial-gradient(80% 50% at 100% 20%, rgb(162 32 56 / 0.04) 0%, transparent 50%),
+      radial-gradient(70% 45% at 0% 40%, rgb(120 140 180 / 0.05) 0%, transparent 45%),
+      var(--ivory);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .btn-island:hover,
+  .btn-island:active {
+    transform: none;
+  }
+}

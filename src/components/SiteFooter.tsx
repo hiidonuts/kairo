@@ -1,10 +1,14 @@
+import { WINDOWS_DOWNLOAD_URL } from "../config/downloads";
+
 const productLinks = [
   ["Features", "#features"],
   ["Try the demo", "#product"],
   ["FAQs", "#faq"],
 ] as const;
 
-const getKairoLinks = [["Download for Windows", "#download"]] as const;
+const getKairoLinks = [
+  ["Download for Windows (Beta)", WINDOWS_DOWNLOAD_URL],
+] as const;
 
 export default function SiteFooter() {
   return (

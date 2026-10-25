@@ -45,7 +45,7 @@ const features = [
   },
   {
     label: "6. Connect",
-    title: "Visualise",
+    title: "Visualise subjects",
     body: "Gain insights on subject topics through the knowledge graph.",
     image: "/media/features/feature-06.png",
     width: 540,

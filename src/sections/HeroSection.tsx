@@ -156,7 +156,7 @@ export default function HeroSection({ ready }: Props) {
             data-reveal
             className="mx-auto mt-5 max-w-lg px-1 text-[14px] leading-relaxed text-[var(--muted)] min-[520px]:mt-7 min-[520px]:text-[15px] md:text-base"
           >
-            A study companion that improves your study workflow.
+            A study companion that improves your academic workflow.
           </p>
 
           <div
